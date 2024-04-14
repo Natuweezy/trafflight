@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Traffic Light Control</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background-color: #f0f0f0;
+    }
+
+    .traffic-signal {
+      width: 100px;
+      height: 300px;
+      background-color: #333;
+      border-radius: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .light {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      margin: 10px;
+      transition: background-color 0.9s;
+      cursor: pointer;
+    }
+
+    .red {
+      background-color: red;
+    }
+
+    .yellow {
+      background-color: yellow;
+    }
+
+    .green {
+      background-color: green;
+    }
+
+    .blinking {
+      animation: blink 0.5s infinite alternate;
+    }
+
+    @keyframes blink {
+      from {
+        opacity: 1;
+      }
+      to {
+        opacity: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="traffic-signal">
+    <div class="light red" onclick="changeLight('red')"></div>
+    <div class="light yellow" onclick="changeLight('yellow')"></div>
+    <div class="light green" onclick="changeLight('green')"></div>
+  </div>
+
+  <script>
+    let isRedOn = false;
+    let isGreenOn = false;
+    let blinkingInterval = null;
+
+    function changeLight(clickedLight) {
+      var lights = document.querySelectorAll('.light');
+      var delayInMilliseconds = 500; 
+      
+
+      // Turn off all lights
+      lights.forEach(function(light) {
+        light.classList.remove('red', 'yellow', 'green', 'blinking');
+      });
+
+      // Stop blinking yellow light if it was previously blinking
+      if (blinkingInterval) {
+        clearInterval(blinkingInterval);
+      }
+
+      // Handle red light click
+      if (clickedLight === 'red') 
+    
+  {
+            if (isGreenOn) {
+          lights[1].classList.add('yellow'); 
+          fetch("/yellowon");// Yellow turns on
+          setTimeout(function() {
+            lights[1].classList.remove('yellow');
+            fetch("/yellowoff");
+             // Yellow turns off
+            lights[0].classList.add('red'); // Red turns on
+          }, 500);
+          fetch("/redon")
+          isRedOn = true;
+          isGreenOn = false;
+        } else {
+          lights[0].classList.add('red'); // Red turns on
+          isRedOn = true;
+        }
+        
+        
+      }
+
+      // Handle green light click
+      else if (clickedLight === 'green')
+       {
+      
+        if (isRedOn) {
+          lights[1].classList.add('yellow');
+          fetch("/yellowon"); // Yellow turns on
+          setTimeout(function() {
+            lights[1].classList.remove('yellow');
+            fetch("/yellowoff"); // Yellow turns off
+            lights[2].classList.add('green'); // Green turns on
+          }, 500);
+          fetch("/greeneon");
+          fetch("/redoff");
+          isRedOn = false;
+          isGreenOn = true;
+        } else {
+          lights[2].classList.add('green'); 
+          fetch("/greenon");// Green turns on
+          isGreenOn = true;
+          fetch("/redoff");
+        }
+       
+        
+      }
+
+      // Handle yellow light click
+      else if (clickedLight === 'yellow')
+      {
+        lights[1].classList.add('yellow'); // Yellow turns on
+        blinkingInterval = setInterval(function() {
+          lights[1].classList.toggle('blinking');
+        }, 500); // Blink every 0.5 seconds
+        fetch("/blinkyellow"); 
+        fetch("/greenoff");
+        fetch("/redoff");
+      }
+    }
+  </script>
+</body>
+</html>
